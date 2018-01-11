@@ -21,3 +21,6 @@ The first part of the application should be response to.
 * Add new item to the UI
 * Calculate Budget 
 * Update UI
+
+## Version 1.1
+The second part of this app has a feature of, deleting an income or an expense and then the budget gets updated.
