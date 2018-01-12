@@ -7,11 +7,12 @@ But i'm using the commom n the best practices in js programming, like, module pa
 
 Enjoy the application.
 I'll try to add some features like.
-* Localstorage.
-* Responsive Layout.
-* PDF of each month.
-* History of each month.
-* Report of the year and month.
+* Localstorage;
+* Responsive Layout;
+* PDF of each month;
+* History of each month;
+* Report of the year and month;
+* Each kind of expense or income will have categories that you gonna choose.
 
 ## Version 1
 The first part of the application should be response to.
