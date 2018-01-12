@@ -12,7 +12,9 @@ I'll try to add some features like.
 * PDF of each month;
 * History of each month;
 * Report of the year and month;
-* Each kind of expense or income will have categories that you're gonna choose.
+* Each kind of expense or income will have categories that you're gonna choose;
+* Repeat the same expense or income for more than a month;
+* Select between countries and change monetary sistem.
 
 ## Version 1
 The first part of the application should be response to.
