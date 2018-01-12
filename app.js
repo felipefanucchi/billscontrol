@@ -1,9 +1,22 @@
 // BUDGET CONTROLLER
 var budgetController = (function() {
-    var Expense = function(id, description, value) {
+    var Expense = function(id, description, value, percentage) {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
+    }
+
+    Expense.prototype.calcPercentage = function(totalInc) {
+        if(totalInc > 0) {
+            this.percentage = Math.round((this.value / totalInc) * 100);
+        } else {
+            this.percentage = -1;
+        }
+    }
+
+    Expense.prototype.getPercentage = function() {
+        return this.percentage;
     }
 
     var Income = function(id, description, value) {
@@ -98,6 +111,20 @@ var budgetController = (function() {
             // Expense = 100 and income 300, spent 33.33% - 100/300 - 0.333*100
         },
 
+        calculatePercentages: function() {
+            data.allItems.exp.forEach(function(curr) {
+                curr.calcPercentage(data.totals.inc);
+            });
+        },
+
+        getPercentages: function() {
+            var allPerc = data.allItems.exp.map(function (curr) {
+                return curr.getPercentage();
+            });
+
+            return allPerc;
+        },
+
         getBudget: function () {
             return{
                 totalInc: data.totals.inc,
@@ -127,8 +154,38 @@ var UIController = (function() {
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
-        container: '.container'
-    };
+        container: '.container',
+        expensesPercLabel: '.item__percentage'
+    },
+    formatNumber;
+
+    formatNumber = function(num, type) {
+        /*
+         * Received 2310 
+         */
+        var splitNum, int, dec;
+
+        num = Math.abs(num);
+        num = num.toFixed(2); // Returns a string: 2310.00
+
+        splitNum = num.split('.');
+        int = splitNum[0]; // 10000
+        if (int.length > 3) {
+            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, 3);
+            /**
+             * int[0] = 1
+             * int[int.length - 3] = 2 (int.length = 5)
+             * first substr goes to the first element until the second.
+             * int[int.length - 3] = 2
+             * int[3]
+             * second substr, goes to the second element until the third AHEAD
+             */
+        }
+
+        dec = splitNum[1]; // 00
+
+        return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+    }
 
     return{
         getInput: function () {
@@ -144,15 +201,15 @@ var UIController = (function() {
 
             if(type === 'inc'){
                 element = DOMstrings.incomeContainer;
-                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             } else if(type === 'exp'){
                 element = DOMstrings.expenseContainer;
-                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             }
 
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
@@ -178,15 +235,47 @@ var UIController = (function() {
         },
 
         displayBudget: function(obj) {
-            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMstrings.expenseLabel).textContent = obj.totalExp;
+            var type;
+            (type >= 0) ? '+' : '-';
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc,'inc');
+            document.querySelector(DOMstrings.expenseLabel).textContent = formatNumber(obj.totalExp,'exp');
 
             if(obj.percentage > 0) {
                 document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage +'%';
             } else {
                 document.querySelector(DOMstrings.percentageLabel).textContent = '---';
             }
+        },
+
+        displayPercentages: function(percentages) {
+            var fields, nodeListForEach;
+
+            fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
+            console.log(fields);
+
+            // Returns a node list.
+
+            // Creates a loop for each item of this nodelist.
+            nodeListForEach = function(list, callback) {
+                for(var i = 0; i < list.length; i++) {
+                    /* 
+                     Call my callback fn, for each item in my nodelist
+                     My callback fn, is executed with two parameters.
+                     First parameter is my current index, nodelist on the position i
+                     And the second parameter it's the index only.
+                    */ 
+                    callback(list[i], i);
+                }
+            }
+            
+            nodeListForEach(fields, function(curr, i) {
+                if (percentages[i] > 0) {
+                    curr.textContent = percentages[i] + '%';
+                } else {
+                    curr.textContent = '---';
+                }
+            });
         },
 
         getDOMstrings: function() {
@@ -204,7 +293,7 @@ var controller = (function  (budgetCtrl, UICtrl) {
      *   And in our controller we make the connection of them,
      *   Passing into parameters
      */
-    var ctrlAddItem, setupEventListeners, updateBudget, ctrlDeleteItem;
+    var ctrlAddItem, setupEventListeners, updateBudget, ctrlDeleteItem, updatePercentages;
 
     setupEventListeners = function() {
         var DOM = UICtrl.getDOMstrings();
@@ -234,6 +323,18 @@ var controller = (function  (budgetCtrl, UICtrl) {
         UICtrl.displayBudget(budget);
     };
 
+    updatePercentages = function() {
+        var percentages;
+        // 1. Calculate Percentages
+        budgetCtrl.calculatePercentages();
+
+        // 2. Reade percentages from the budget controller
+        percentages = budgetCtrl.getPercentages();
+
+        // 3. Update the UI with the new percentages
+        UICtrl.displayPercentages(percentages);
+    };
+
     ctrlAddItem = function() {
         var input, newItem;
 
@@ -252,6 +353,9 @@ var controller = (function  (budgetCtrl, UICtrl) {
 
             // 5. Calculate n display the budget on the ui
             updateBudget();
+
+            // 6. Calculate n update percentages
+            updatePercentages();
         }
     }
 
@@ -261,16 +365,24 @@ var controller = (function  (budgetCtrl, UICtrl) {
         itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
 
         if(itemID) {
+
+            // inc-1
             splitID = itemID.split('-');
             type = splitID[0];
             ID = splitID[1];
             numberID = parseInt(ID);
 
+            // 1. Delete the item from the data structure
             budgetCtrl.deleteItem(type, numberID);
 
+            // 2. Delete the item from the ui
             UICtrl.deleteListItem(itemID);
 
+            // 3. Update and show the new budget
             updateBudget();
+
+            // 4. Calculate n update percentages
+            updatePercentages();
         }
     }
 
