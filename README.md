@@ -12,7 +12,7 @@ I'll try to add some features like.
 * PDF of each month;
 * History of each month;
 * Report of the year and month;
-* Each kind of expense or income will have categories that you gonna choose.
+* Each kind of expense or income will have categories that you're gonna choose.
 
 ## Version 1
 The first part of the application should be response to.
