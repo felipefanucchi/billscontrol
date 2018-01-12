@@ -155,9 +155,11 @@ var UIController = (function() {
         expenseLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
         container: '.container',
-        expensesPercLabel: '.item__percentage'
+        expensesPercLabel: '.item__percentage',
+        dateLabel: '.budget__title--month' 
     },
-    formatNumber;
+    formatNumber,
+    nodeListForEach;
 
     formatNumber = function(num, type) {
         /*
@@ -185,6 +187,19 @@ var UIController = (function() {
         dec = splitNum[1]; // 00
 
         return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
+    }
+
+    // Creates a loop for each item of this nodelist.
+    nodeListForEach = function (list, callback) {
+        for (var i = 0; i < list.length; i++) {
+            /* 
+             Call my callback fn, for each item in my nodelist
+             My callback fn, is executed with two parameters.
+             First parameter is my current index, nodelist on the position i
+             And the second parameter it's the index only.
+            */
+            callback(list[i], i);
+        }
     }
 
     return{
@@ -249,25 +264,12 @@ var UIController = (function() {
         },
 
         displayPercentages: function(percentages) {
-            var fields, nodeListForEach;
+            var fields;
 
             fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
             console.log(fields);
 
             // Returns a node list.
-
-            // Creates a loop for each item of this nodelist.
-            nodeListForEach = function(list, callback) {
-                for(var i = 0; i < list.length; i++) {
-                    /* 
-                     Call my callback fn, for each item in my nodelist
-                     My callback fn, is executed with two parameters.
-                     First parameter is my current index, nodelist on the position i
-                     And the second parameter it's the index only.
-                    */ 
-                    callback(list[i], i);
-                }
-            }
             
             nodeListForEach(fields, function(curr, i) {
                 if (percentages[i] > 0) {
@@ -276,6 +278,30 @@ var UIController = (function() {
                     curr.textContent = '---';
                 }
             });
+        },
+
+        displayMonth: function() {
+            var now, currYear, currMonth, months;
+
+            now = new Date();
+            months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September' ,'October', 'November', 'December'];
+            currYear = now.getFullYear();
+            currMonth = now.getMonth();
+
+            document.querySelector(DOMstrings.dateLabel).textContent = months[currMonth] + ' ' + currYear;
+        },
+
+        changedType: function() {
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue);
+            
+            nodeListForEach(fields, function(curr) {
+                curr.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
         },
 
         getDOMstrings: function() {
@@ -309,6 +335,8 @@ var controller = (function  (budgetCtrl, UICtrl) {
         });
 
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
     }
 
     updateBudget = function() {
@@ -390,6 +418,7 @@ var controller = (function  (budgetCtrl, UICtrl) {
         init: function() {
             console.log('Application has started.');
             setupEventListeners();
+            UICtrl.displayMonth();
             UICtrl.displayBudget({
                 totalInc: 0,
                 totalExp: 0,
