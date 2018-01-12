@@ -22,5 +22,9 @@ The first part of the application should be response to.
 * Calculate Budget 
 * Update UI
 
-## Version 1.1
+## Version 1.1.0
 The second part of this app has a feature of, deleting an income or an expense and then the budget gets updated.
+
+## Version 1.1.1
+Now we can see better our values, i implemented a format for all of them.
+For this, i used a fn in my UICtrl, that transform our value in a string with decimals and then, i've made an if statement to set the commas in the values. Actually onlye accepts value with three int and three decimals places.
