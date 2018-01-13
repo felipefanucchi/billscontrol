@@ -76,7 +76,21 @@ var budgetController = (function() {
             // Push it into our data structure
             data.allItems[type].push(newItem);
             //Return the new element
+            console.log(newItem);
             return newItem;
+        },
+
+        addItemLocal: function (item, type) {
+            /**
+             * Recebo meu objeto do item;
+             */
+            console.log('AddItemLocal has been executed');
+
+            localStorage.setItem('description', item.description);
+            localStorage.setItem('value', item.value);
+
+            console.log(localStorage.description);
+            console.log(localStorage.value);
         },
 
         deleteItem: function(type, id) {
@@ -267,7 +281,6 @@ var UIController = (function() {
             var fields;
 
             fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
-            console.log(fields);
 
             // Returns a node list.
             
@@ -384,6 +397,9 @@ var controller = (function  (budgetCtrl, UICtrl) {
 
             // 6. Calculate n update percentages
             updatePercentages();
+
+            // 7. localStorage the items 
+            budgetCtrl.addItemLocal(newItem, 'inc');
         }
     }
 
