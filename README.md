@@ -7,11 +7,14 @@ But i'm using the commom n the best practices in js programming, like, module pa
 
 Enjoy the application.
 I'll try to add some features like.
-* Localstorage.
-* Responsive Layout.
-* PDF of each month.
-* History of each month.
-* Report of the year and month.
+* Localstorage;
+* Responsive Layout;
+* PDF of each month;
+* History of each month;
+* Report of the year and month;
+* Each kind of expense or income will have categories that you're gonna choose;
+* Repeat the same expense or income for more than a month;
+* Select between countries and change monetary sistem.
 
 ## Version 1
 The first part of the application should be response to.
@@ -28,3 +31,7 @@ The second part of this app has a feature of, deleting an income or an expense a
 ## Version 1.1.1
 Now we can see better our values, i implemented a format for all of them.
 For this, i used a fn in my UICtrl, that transform our value in a string with decimals and then, i've made an if statement to set the commas in the values. Actually onlye accepts value with three int and three decimals places.
+
+## Version 1.1.2
+The UX of the input fields has been improved. When you choose a expense all the fields gets a red border and when it's an income, it gets a green border.
+Month and the current year now has been displayed in the budget section.
