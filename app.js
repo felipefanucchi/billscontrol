@@ -80,17 +80,17 @@ var budgetController = (function() {
             return newItem;
         },
 
-        addItemLocal: function (item, type) {
+        addItemLocal: function (item) {
             /**
              * Recebo meu objeto do item;
              */
-            console.log('AddItemLocal has been executed');
+            var itemStr, itemParse;
+            
+            itemStr = JSON.stringify(item);
+            localStorage.setItem(`item`, itemStr);
+            itemParse = JSON.parse(localStorage.getItem(`item`, itemStr));
 
-            localStorage.setItem('description', item.description);
-            localStorage.setItem('value', item.value);
-
-            console.log(localStorage.description);
-            console.log(localStorage.value);
+            return itemParse;
         },
 
         deleteItem: function(type, id) {
@@ -241,6 +241,14 @@ var UIController = (function() {
             newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+        },
+
+        localItems: function(obj) {
+            // 1. Receive my object as param.
+
+            // 2. Insert them in the same structure of the method above.
+
+            // 3. returns nothings, just make changes in my html
         },
 
         deleteListItem: function(selectorID) {
@@ -400,6 +408,8 @@ var controller = (function  (budgetCtrl, UICtrl) {
 
             // 7. localStorage the items 
             budgetCtrl.addItemLocal(newItem, 'inc');
+
+            // 8. get LocalStorage items and add to the UI
         }
     }
 
