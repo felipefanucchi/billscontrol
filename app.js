@@ -98,6 +98,8 @@ var budgetController = (function() {
 
             localStorage.setItem('arr-inc', JSON.stringify(data.localItems['inc']));
             localStorage.setItem('arr-exp', JSON.stringify(data.localItems['exp']));
+
+            // Fazer com que o array nao se perca a cada reload, manter os anteriores sempre.
         },
 
         deleteItem: function(type, id) {
@@ -447,9 +449,6 @@ var controller = (function  (budgetCtrl, UICtrl) {
 
             // 6. Calculate n update percentages
             updatePercentages();
-
-            // 7. localStorage the items 
-            budgetCtrl.addLocal(input.type);
         }
     }
 
