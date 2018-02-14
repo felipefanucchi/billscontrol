@@ -316,13 +316,16 @@ var UIController = (function() {
             var fields = document.querySelectorAll(
                 DOMstrings.inputType + ',' +
                 DOMstrings.inputDescription + ',' +
-                DOMstrings.inputValue);
+                DOMstrings.inputValue),
+                btns = document.querySelectorAll(DOMstrings.inputBtn);
             
             nodeListForEach(fields, function(curr) {
                 curr.classList.toggle('red-focus');
             });
-
-            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
+            
+            nodeListForEach(btns, function(curr) {
+                curr.classList.toggle('red')
+            });
         },
 
         getDOMstrings: function() {
