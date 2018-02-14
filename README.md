@@ -7,7 +7,7 @@ But i'm using the commom n the best practices in js programming, like, module pa
 
 Enjoy the application.
 I'll try to add some features like.
-* Localstorage;
+* Localstorage (Almost there);
 * Responsive Layout;
 * PDF of each month;
 * History of each month;
