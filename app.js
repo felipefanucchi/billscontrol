@@ -30,6 +30,10 @@ var budgetController = (function() {
             exp: [],
             inc: []
         },
+        localItems: {
+            exp: [],
+            inc: []
+        },
         totals: {
             exp: 0,
             inc: 0
@@ -75,6 +79,7 @@ var budgetController = (function() {
             }
             // Push it into our data structure
             data.allItems[type].push(newItem);
+            data.localItems[type].push(newItem);
             //Return the new element
             return newItem;
         },
@@ -82,13 +87,17 @@ var budgetController = (function() {
         addLocal: function (type) {
             // Receive the type of the item (income/expense). 
             var itemStr, itemParse;
-            data.allItems[type].map( (el, i) => {
-                // Push the type to each item
-                data.allItems[type].whichType = type;
-
+            data.allItems[type].forEach( (el, i) => {
+                // Stringfy to save in localstorage
                 itemStr = JSON.stringify(data.allItems[type][i]);
+                // Saving each item in localstorage, easier to delete.
                 localStorage.setItem(`i-${type}-${i}`, itemStr);
+                // Turn the item back to an object
+                itemParse = JSON.parse(itemStr);
             });
+
+            localStorage.setItem('arr-inc', JSON.stringify(data.localItems['inc']));
+            localStorage.setItem('arr-exp', JSON.stringify(data.localItems['exp']));
         },
 
         deleteItem: function(type, id) {
@@ -149,7 +158,7 @@ var budgetController = (function() {
         },
 
         data: function() {
-           data
+          return data
         }
     }
 
@@ -245,12 +254,39 @@ var UIController = (function() {
         },
 
         localItems: function(obj) {
+            var html, newHtml, element, item, arrInc, arrExp;
+
+            arrInc = JSON.parse(localStorage.getItem('arr-inc'));
+            arrExp = JSON.parse(localStorage.getItem('arr-exp'));
             // 1. Clear the current list.
             document.querySelector(DOMstrings.incomeContainer).textContent = "";
             document.querySelector(DOMstrings.expenseContainer).textContent = "";
             // 2. Fill the list with the Inc and Exp Array.
+            arrInc.forEach( (el, i) => {
+                element = DOMstrings.incomeContainer;
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 
-            // 3. While we filled the 
+                item = JSON.parse(localStorage.getItem(`i-inc-${i}`));
+                
+                newHtml = html.replace('%id%', item.id);
+                newHtml = newHtml.replace('%description%', item.description);
+                newHtml = newHtml.replace('%value%', formatNumber(item.value, 'inc'));
+
+                document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+            });
+
+            arrExp.forEach( (el, i) => {
+                element = DOMstrings.expenseContainer;
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+
+                item = JSON.parse(localStorage.getItem(`i-exp-${i}`));
+                
+                newHtml = html.replace('%id%', item.id);
+                newHtml = newHtml.replace('%description%', item.description);
+                newHtml = newHtml.replace('%value%', formatNumber(item.value, 'exp'));
+
+                document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+            })
         },
 
         deleteListItem: function(selectorID) {
@@ -421,9 +457,12 @@ var controller = (function  (budgetCtrl, UICtrl) {
         var input;
 
         input = UICtrl.getInput();
-        budgetController.addLocal(input.type);
+        budgetCtrl.addLocal(input.type);
+        
+        // Retrieving the data structure, and the UICtrl can have access
+        UICtrl.localItems(budgetCtrl.data());
 
-        UICtrl.localItems();
+        
     }
 
     ctrlDeleteItem = function(event) {
@@ -462,8 +501,9 @@ var controller = (function  (budgetCtrl, UICtrl) {
                 totalInc: 0,
                 totalExp: 0,
                 budget: 0,
-                percentage: -1
+                //percentage: -1
             });
+            UICtrl.localItems();
         }
     }
 
