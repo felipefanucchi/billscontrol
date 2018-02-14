@@ -76,21 +76,19 @@ var budgetController = (function() {
             // Push it into our data structure
             data.allItems[type].push(newItem);
             //Return the new element
-            console.log(newItem);
             return newItem;
         },
-
-        addItemLocal: function (item) {
-            /**
-             * Recebo meu objeto do item;
-             */
+        
+        addLocal: function (type) {
+            // Receive the type of the item (income/expense). 
             var itemStr, itemParse;
-            
-            itemStr = JSON.stringify(item);
-            localStorage.setItem(`item`, itemStr);
-            itemParse = JSON.parse(localStorage.getItem(`item`, itemStr));
+            data.allItems[type].map( (el, i) => {
+                // Push the type to each item
+                data.allItems[type].whichType = type;
 
-            return itemParse;
+                itemStr = JSON.stringify(data.allItems[type][i]);
+                localStorage.setItem(`i-${type}-${i}`, itemStr);
+            });
         },
 
         deleteItem: function(type, id) {
@@ -104,6 +102,8 @@ var budgetController = (function() {
 
             if (index !== -1){ // -1 is what the method above returns if didn't find the index
                 data.allItems[type].splice(index, 1);
+
+                localStorage.removeItem(`i-${type}-${id}`);
             }
         },
 
@@ -148,8 +148,8 @@ var budgetController = (function() {
             }
         },
 
-        testing: function() {
-            console.log(data)
+        data: function() {
+           data
         }
     }
 
@@ -162,6 +162,7 @@ var UIController = (function() {
         inputDescription: '.add__description',
         inputValue: '.add__value',
         inputBtn: '.add__btn',
+        inputBtnLocal: '.add__btn--local',
         incomeContainer: '.income__list',
         expenseContainer: '.expenses__list',
         budgetLabel: '.budget__value',
@@ -244,11 +245,12 @@ var UIController = (function() {
         },
 
         localItems: function(obj) {
-            // 1. Receive my object as param.
+            // 1. Clear the current list.
+            document.querySelector(DOMstrings.incomeContainer).textContent = "";
+            document.querySelector(DOMstrings.expenseContainer).textContent = "";
+            // 2. Fill the list with the Inc and Exp Array.
 
-            // 2. Insert them in the same structure of the method above.
-
-            // 3. returns nothings, just make changes in my html
+            // 3. While we filled the 
         },
 
         deleteListItem: function(selectorID) {
@@ -343,12 +345,13 @@ var controller = (function  (budgetCtrl, UICtrl) {
      *   And in our controller we make the connection of them,
      *   Passing into parameters
      */
-    var ctrlAddItem, setupEventListeners, updateBudget, ctrlDeleteItem, updatePercentages;
+    var ctrlAddItem, setupEventListeners, updateBudget, ctrlDeleteItem, updatePercentages, ctrlAddLocal;
 
     setupEventListeners = function() {
         var DOM = UICtrl.getDOMstrings();
 
         document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+        document.querySelector(DOM.inputBtnLocal).addEventListener('click', ctrlAddLocal);
 
         document.addEventListener('keypress', function (e) {
 
@@ -410,10 +413,17 @@ var controller = (function  (budgetCtrl, UICtrl) {
             updatePercentages();
 
             // 7. localStorage the items 
-            budgetCtrl.addItemLocal(newItem, 'inc');
-
-            // 8. get LocalStorage items and add to the UI
+            budgetCtrl.addLocal(input.type);
         }
+    }
+
+    ctrlAddLocal = function() {
+        var input;
+
+        input = UICtrl.getInput();
+        budgetController.addLocal(input.type);
+
+        UICtrl.localItems();
     }
 
     ctrlDeleteItem = function(event) {
