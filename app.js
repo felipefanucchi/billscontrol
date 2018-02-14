@@ -449,8 +449,6 @@ var controller = (function  (budgetCtrl, UICtrl) {
 
             // 6. Calculate n update percentages
             updatePercentages();
-
-            budgetCtrl.addLocal(input.type);
         }
     }
 
