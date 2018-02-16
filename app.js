@@ -264,31 +264,37 @@ var UIController = (function() {
             document.querySelector(DOMstrings.incomeContainer).textContent = "";
             document.querySelector(DOMstrings.expenseContainer).textContent = "";
             // 2. Fill the list with the Inc and Exp Array.
-            arrInc.forEach( (el, i) => {
-                element = DOMstrings.incomeContainer;
-                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+            // noinspection JSAnnotator
 
-                item = JSON.parse(localStorage.getItem(`i-inc-${i}`));
-                
-                newHtml = html.replace('%id%', item.id);
-                newHtml = newHtml.replace('%description%', item.description);
-                newHtml = newHtml.replace('%value%', formatNumber(item.value, 'inc'));
+            if(arrExp !== null && arrExp !== undefined) {
+                arrInc.forEach((el, i) => {
+                    element = DOMstrings.incomeContainer;
+                    html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 
-                document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
-            });
+                    item = JSON.parse(localStorage.getItem(`i-inc-${i}`));
 
-            arrExp.forEach( (el, i) => {
-                element = DOMstrings.expenseContainer;
-                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+                    newHtml = html.replace('%id%', item.id);
+                    newHtml = newHtml.replace('%description%', item.description);
+                    newHtml = newHtml.replace('%value%', formatNumber(item.value, 'inc'));
 
-                item = JSON.parse(localStorage.getItem(`i-exp-${i}`));
-                
-                newHtml = html.replace('%id%', item.id);
-                newHtml = newHtml.replace('%description%', item.description);
-                newHtml = newHtml.replace('%value%', formatNumber(item.value, 'exp'));
+                    document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+                });
+            }
 
-                document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
-            })
+            if(arrInc !== null && arrInc !== undefined) {
+                arrExp.forEach((el, i) => {
+                    element = DOMstrings.expenseContainer;
+                    html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+
+                    item = JSON.parse(localStorage.getItem(`i-exp-${i}`));
+
+                    newHtml = html.replace('%id%', item.id);
+                    newHtml = newHtml.replace('%description%', item.description);
+                    newHtml = newHtml.replace('%value%', formatNumber(item.value, 'exp'));
+
+                    document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+                });
+            }
         },
 
         deleteListItem: function(selectorID) {
