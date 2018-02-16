@@ -35,3 +35,11 @@ For this, i used a fn in my UICtrl, that transform our value in a string with de
 ## Version 1.1.2
 The UX of the input fields has been improved. When you choose a expense all the fields gets a red border and when it's an income, it gets a green border.
 Month and the current year now has been displayed in the budget section.
+
+## Version 1.2.1
+Localstorage has been implemente, it contains a few bugs, we're working on it.
+
+## Authors
+
+* **Felipe Fanuchi** - *Initial work* - [Kuat](https://github.com/felipefanucchi)
+* **Filipe Souza** - *Contributor* - [Moratinho](https://github.com/Filipe-Souza)
